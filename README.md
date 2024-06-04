@@ -1,1 +1,1 @@
-## A meta circular interpreter on c++ template.
+## A mini fp language on c++ template.
