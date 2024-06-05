@@ -110,16 +110,16 @@ declare(_v2);
 namespace {
 
 template <typename A, typename E, typename In> struct let_subst_1;
-template <typename A, typename E, typename In> struct let_subst;
+template <typename A, typename E, typename In> struct let_subst_2;
 
-template <typename A, typename E, typename In> struct let_subst_1 : let_subst<A, E, In> {};
+template <typename A, typename E, typename In> struct let_subst_1 : let_subst_2<A, E, In> {};
 template <typename A, typename E, typename V> struct let_subst_1<A, E, unquote<quote<V>>> : let_subst_1<A, E, V> {};
 template <typename A, typename E> struct let_subst_1<A, E, A> { using type = E; };
 
-template <typename _A, typename _E, typename V> struct let_subst<_A, _E, quote<V>> : quote<V> {};
-template <typename _A, typename _E, typename In> struct let_subst { using type = In; };
+template <typename _A, typename _E, typename V> struct let_subst_2<_A, _E, quote<V>> : quote<V> {};
+template <typename _A, typename _E, typename In> struct let_subst_2 { using type = In; };
 template <typename A, typename E, template <typename...> typename F, typename... Ts>
-struct let_subst<A, E, F<Ts...>> { using type = F<typename let_subst_1<A, E, Ts>::type...>; };
+struct let_subst_2<A, E, F<Ts...>> { using type = F<typename let_subst_1<A, E, Ts>::type...>; };
 
 template <typename A, typename E, typename In> struct strict_let;
 
@@ -142,17 +142,17 @@ struct let<A, E, in<In>> : unquote<typename let_quoted<A, quote<E>, quote<In>>::
 namespace {
 
 template <typename Body, typename... Ts> struct lambda_subst_1;
-template <typename Body, typename...> struct lambda_subst;
+template <typename Body, typename...> struct lambda_subst_2;
 
-template <typename Body, typename... Ts> struct lambda_subst_1 : lambda_subst<Body, Ts...> {};
+template <typename Body, typename... Ts> struct lambda_subst_1 : lambda_subst_2<Body, Ts...> {};
 template <typename Body, typename... Ts>
 struct lambda_subst_1<unquote<quote<Body>>, Ts...> : lambda_subst_1<Body, Ts...> {};
 
 template <typename Body, typename... Ts>
-struct lambda_subst<quote<Body>, Ts...> : identity<lambda_subst<quote<Body>, Ts...>> { using apply = quote<Body>; };
-template <typename Body> struct lambda_subst<Body> : Body {};
+struct lambda_subst_2<quote<Body>, Ts...> : identity<lambda_subst_2<quote<Body>, Ts...>> { using apply = quote<Body>; };
+template <typename Body> struct lambda_subst_2<Body> : Body {};
 template <typename Body, typename T, typename... Ts>
-struct lambda_subst<Body, T, Ts...> : identity<lambda_subst<Body, T, Ts...>> {
+struct lambda_subst_2<Body, T, Ts...> : identity<lambda_subst_2<Body, T, Ts...>> {
     template <typename U> using apply = lambda_subst_1<let<T, U, in<Body>>, Ts...>;
 };
 
