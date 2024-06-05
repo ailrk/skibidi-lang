@@ -71,6 +71,8 @@ struct greater_equal : identity<greater_equal> {
 
 
 /* list */
+namespace {
+
 template <typename H, typename T> struct cons : identity<cons<H, T>> {};
 struct nil : identity<nil> {};
 
@@ -80,6 +82,33 @@ template <typename H, typename T> struct head<cons<H, T>> : H {};
 template <typename L> struct tail;
 template <typename H, typename T> struct tail<cons<H, T>> : T {};
 
+template <typename L, typename R> struct append;
+template <typename R> struct append<nil, R> : R {};
+template <typename H, typename T, typename R> struct append<cons<H, T>, R> : cons<H, append<T, R>> {};
+ 
+template <typename T> struct last;
+template <> struct last<nil> : nil {};
+template <typename N> struct last<cons<N, nil>> : N {};
+template <typename T, typename N> struct last<cons<T, N>> : last<N> {};
+
+template <typename T> struct length;
+template <> struct length<nil> : int_<0> {};
+template <typename N, typename T> struct length<cons<N, T>> : apply<plus, int_<1>, length<T>> {};
+
+template <typename T> struct null : bool_<false> {};
+template <> struct null<nil> : bool_<true> {};
+
+template <typename F, typename L> struct map;
+template <typename F> struct map<F, nil> : nil {};
+template <typename F, typename H, typename T> struct map<F, cons<H, T>> : cons<apply<F, H>, map<F, T>>{ };
+
+template <typename T> struct reverse;
+template <typename S1, typename S2> struct __reverse; 
+template <typename S2> struct __reverse<nil, S2> : S2 {}; 
+template <typename H, typename T, typename S2> struct __reverse<cons<H, T>, S2> : __reverse<T, cons<H, S2>> {};
+template <typename L> struct reverse : __reverse<L, nil> {};
+
+}
 
 /* conditionals */
 template <typename C, typename T, typename F> struct if_ {
